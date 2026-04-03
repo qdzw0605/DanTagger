@@ -141,12 +141,11 @@
         }
 
         .theme-toggle {
-            position: fixed;
-            top: 0.65rem;
-            right: 0.65rem;
-            z-index: 100;
-            width: 2.35rem;
-            height: 2.35rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2rem;
+            height: 2rem;
             padding: 0;
             margin: 0;
             border-radius: var(--radius-sm);
@@ -154,8 +153,6 @@
             background: var(--surface);
             box-shadow: var(--shadow);
             color: var(--text);
-            display: grid;
-            place-items: center;
             cursor: pointer;
             transition: border-color 0.15s, background 0.15s;
         }
@@ -170,7 +167,6 @@
 
         .page-header {
             margin-bottom: 1.25rem;
-            padding-right: 2.75rem;
         }
         .page-header h1 {
             font-size: 1.35rem;
@@ -894,12 +890,35 @@
         .tags-container.tags-container--columns .tag-pill.in-blacklist::before {
             order: -2;
         }
-        .tag-layout-toggle-wrap {
-            flex: 1;
-            min-width: 0;
-            display: flex;
-            justify-content: flex-end;
+        .section-row--tags {
+            flex-wrap: wrap;
             align-items: center;
+            row-gap: 0.35rem;
+            width: 100%;
+        }
+        .section-row__tags-head {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.45rem;
+            min-width: 0;
+            width: 100%;
+        }
+        .tag-toolbar-actions .section-hint {
+            font-size: 0.65rem;
+            font-weight: 500;
+            color: var(--muted);
+            opacity: 0.72;
+            margin: 0;
+            line-height: 1.35;
+            flex: 0 1 auto;
+            min-width: 0;
+            max-width: 100%;
+        }
+        .tag-toolbar-actions .tag-layout-toggle {
+            min-height: 1.5rem;
+            align-self: center;
+            margin-left: auto;
         }
         .tag-layout-toggle {
             flex: 0 0 auto;
@@ -1021,10 +1040,12 @@
         }
 
         .tag-toolbar-actions {
-            display: inline-flex;
+            display: flex;
             align-items: center;
             gap: 0.35rem;
             flex-wrap: wrap;
+            flex: 1 1 auto;
+            min-width: 0;
         }
         .tag-toolbar-actions .tag-toolbar-btn {
             flex: 0 0 auto;
@@ -1106,12 +1127,11 @@
 </head>
 <body>
 
-    <button type="button" id="themeToggle" class="theme-toggle" aria-label="切换显示模式"><span class="theme-emoji" aria-hidden="true">🌓</span></button>
-
     <header class="page-header">
         <h1>
             <span>🏷️ Danbooru 标签工作站</span>
             <button type="button" id="settingsBtn" class="settings-btn" aria-haspopup="dialog" aria-expanded="false" aria-controls="settingsModal" title="设置">⚙️</button>
+            <button type="button" id="themeToggle" class="theme-toggle" aria-label="切换显示模式"><span class="theme-emoji" aria-hidden="true">🌓</span></button>
         </h1>
         <p>粘贴帖子链接或标签列表，可选 Google 翻译后贴回对应结果。</p>
     </header>
@@ -1208,26 +1228,26 @@
         </div>
 
         <div>
-            <div class="section-row">
-                <span class="section-label">标签</span>
-                <span class="section-hint" title="按住 D 再左键删除；右键在标签内编辑译文。←/→ 切换档；Alt+C 复位（不在输入框内）。复制成功时标签栏会短暂亮边。"><kbd>D</kbd>+删 · 右键 · ←→档 · <kbd>Alt</kbd><kbd>C</kbd>复位</span>
-                <div class="tag-toolbar-actions">
-                    <button
-                        type="button"
-                        id="tagSelectionModeBtn"
-                        class="tag-selection-mode-btn tag-toolbar-btn"
-                        aria-pressed="false"
-                        title=""
-                    >◉</button>
-                    <button
-                        type="button"
-                        id="tagSelectionResetBtn"
-                        class="tag-toolbar-btn"
-                        title="将本档位的选择恢复为默认：第一档为全部开启（仍应用排除名单）；第二档为全部关闭。快捷键 Alt+C（未在输入框内时）"
-                    >复位</button>
-                </div>
-                <div class="tag-layout-toggle-wrap">
-                    <button type="button" class="tag-layout-toggle" id="tagLayoutToggle" aria-label="切换标签排列" title="">▥</button>
+            <div class="section-row section-row--tags">
+                <div class="section-row__tags-head">
+                    <span class="section-label">标签</span>
+                    <div class="tag-toolbar-actions">
+                        <button
+                            type="button"
+                            id="tagSelectionResetBtn"
+                            class="tag-toolbar-btn"
+                            title="将本档位的选择恢复为默认：第一档为全部开启（仍应用排除名单）；第二档为全部关闭。"
+                        >复位</button>
+                        <button
+                            type="button"
+                            id="tagSelectionModeBtn"
+                            class="tag-selection-mode-btn tag-toolbar-btn"
+                            aria-pressed="false"
+                            title=""
+                        >◉</button>
+                        <span class="section-hint" title="按住 D 再左键删除；Alt+X 换挡（不在输入框内时）。复制成功时标签栏会短暂亮边。"><kbd>D</kbd>+删 · <kbd>Alt</kbd><kbd>X</kbd>换挡</span>
+                        <button type="button" class="tag-layout-toggle" id="tagLayoutToggle" aria-label="切换标签排列" title="">▥</button>
+                    </div>
                 </div>
             </div>
             <div id="tagsContainer" class="tags-container"></div>
@@ -1446,8 +1466,8 @@
             const off = getTagSelectionMode() === 'all_off';
             btn.textContent = off ? '○' : '◉';
             btn.title = off
-                ? '当前：默认全部关闭（点标签开启；排除名单在此档不生效）。点击或 ←/→ 切换为「默认开」。'
-                : '当前：默认全部开启（与排除名单联动）。点击或 ←/→ 切换为「默认关」。';
+                ? '当前：默认全部关闭（点标签开启；排除名单在此档不生效）。点击或 ←/→ 切换为「默认开」。快捷键 Alt+X（未在输入框内时）。'
+                : '当前：默认全部开启（与排除名单联动）。点击或 ←/→ 切换为「默认关」。快捷键 Alt+X（未在输入框内时）。';
             btn.setAttribute('aria-label', off ? '标签选择：默认关' : '标签选择：默认开');
             btn.setAttribute('aria-pressed', off ? 'true' : 'false');
         }
@@ -2110,10 +2130,10 @@
 
         window.addEventListener('keydown', (e) => {
             if (e.altKey) {
-                if (e.code === 'KeyC') {
+                if (e.code === 'KeyX') {
                     if (!shouldAllowGlobalShortcut()) return;
                     e.preventDefault();
-                    resetCurrentTagSelection();
+                    toggleTagSelectionMode();
                     return;
                 }
                 if (e.code === 'KeyT') {
